@@ -36,4 +36,10 @@ const userController = {
         res.sendStatus(400);
       });
   },
+
+  createUser({ body }, res) {
+    User.create(body)
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((e) => res.json(e));
+  },
 };
