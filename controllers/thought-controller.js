@@ -50,10 +50,25 @@ const thoughtController = {
         if (!dbUserData) {
           return res
             .status(404)
-            .json({ message: "Thought created but there is no user with this ID!" });
+            .json({ message: "Thought created but there is no user with this ID" });
         }
 
         res.json({ message: "Thought successfully created!" });
+      })
+      .catch((err) => res.json(err));
+  },
+
+  updateThought({ params, body }, res) {
+    Thought.findOneAndUpdate({ _id: params.id }, body, {
+      new: true,
+      runValidators: true,
+    })
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
+          res.status(404).json({ message: "There is no thought with this ID" });
+          return;
+        }
+        res.json(dbThoughtData);
       })
       .catch((err) => res.json(err));
   },
