@@ -48,11 +48,9 @@ const thoughtController = {
       })
       .then((dbUserData) => {
         if (!dbUserData) {
-          return res
-            .status(404)
-            .json({
-              message: "Thought created but there is no user with this ID",
-            });
+          return res.status(404).json({
+            message: "Thought created but there is no user with this ID",
+          });
         }
 
         res.json({ message: "Thought successfully created!" });
@@ -73,25 +71,26 @@ const thoughtController = {
         res.json(dbThoughtData);
       })
       .catch((e) => res.json(e));
-
   },
   deleteThought({ params }, res) {
     Thought.findOneAndDelete({ _id: params.id })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-          return res.status(404).json({ message: "There is no thought with this ID" });
+          return res
+            .status(404)
+            .json({ message: "There is no thought with this ID" });
         }
         return User.findOneAndUpdate(
           { thoughts: params.id },
-          { $pull: { thoughts: params.id } }, 
+          { $pull: { thoughts: params.id } },
           { new: true }
         );
       })
       .then((dbUserData) => {
         if (!dbUserData) {
-          return res
-            .status(404)
-            .json({ message: "Thought created but there is no user with this ID" });
+          return res.status(404).json({
+            message: "Thought created but there is no user with this ID",
+          });
         }
         res.json({ message: "Thought has been successfully deleted" });
       })
@@ -114,4 +113,15 @@ const thoughtController = {
       .catch((e) => res.json(e));
   },
 
+  removeReaction({ params }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.thoughtId },
+      { $pull: { reactions: { reactionId: params.reactionId } } },
+      { new: true }
+    )
+      .then((dbThoughtData) => res.json(dbThoughtData))
+      .catch((e) => res.json(e));
+  },
 };
+
+module.exports = thoughtController;
